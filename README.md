@@ -13,5 +13,14 @@ I used folloing components:
   - Arduino IDE [www.arduino.cc](https://www.arduino.cc/en/Main/Software)
 
   
+## Get your Ansluta address bytes
+- start Arduion ide, load project files
+- edit ansluta.ino -> set your SSID and Wlankey at row 40, 41
+- write project to nodeMCU
+- determine your nodeMCU IP and connect browser. example: **192.168.178.130/ansluta/getAddress**
+- press button on original remote
+- note your AddressBytes
+- edit ansluta.ino -> set your AddressByteA and AddressByteB at row 54, 55
+- write project to nodeMCU
 
   
