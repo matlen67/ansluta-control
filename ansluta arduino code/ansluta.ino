@@ -10,7 +10,7 @@
 		* CC2500 (WLC240)  (ebay)
 		
 	Wired:
-             NodeMCU                   CC2500
+           NodeMCU                   CC2500
 		
 		SPI     GPIO   Board
 		----------------------         --------
@@ -51,6 +51,8 @@ String header;
    press button within 5 sec on your original ansluta remote
    is a valid address detect it will be displayed
 */ 
+
+// pute here your AddressBytes
 byte AddressByteA = 0xD0;
 byte AddressByteB = 0x9A;
 
@@ -108,22 +110,32 @@ void setup(){
 }
 
 void loop(){
+
   WiFiClient client = server.available();   // Listen for incoming clients
 
-  if (client) { // If a new client connects,
+  if (client) {                             // If a new client connects,
     if(DEBUG){
-      Serial.println("New Client.");          // print a message out in the serial port
+      Serial.println("New Client.");        // print a message out in the serial port
     }
     String currentLine = "";                // make a String to hold incoming data from the client
     String adrByte = "";
     boolean adrState = false;
+    int timeOut = 0;
+    
     while (client.connected()) {            // loop while the client's connected
+      timeOut ++;
+      if (timeOut >= 500000){               // dirty workaround because ClientTimeout not Work!
+        client.stop();                      // Chrome keep alive the connection and block other connection (Fhem,Firefox)
+        }
+        
       if (client.available()) {             // if there's bytes to read from the client,
+        
         char c = client.read();             // read a byte, then
         if(DEBUG){
           Serial.write(c);                    // print it out the serial monitor
         }
         header += c;
+        
         if (c == '\n') {                    // if the byte is a newline character
           // if the current line is blank, you got two newline characters in a row.
           // that's the end of the client HTTP request, so send a response:
@@ -154,6 +166,7 @@ void loop(){
               if(DEBUG){
                 Serial.println("Ansluta 50% ");
               }
+              
               SendCommand(AddressByteA,AddressByteB, Light_ON_50);
             } else if (header.indexOf("GET /ansluta/100") >= 0) {
               if(DEBUG){
@@ -173,8 +186,9 @@ void loop(){
               client.println("<br>");
               client.println("<p>Listen for adressbyte...</p>");
               client.println("<p>Press button on original remote!</p>");
-              client.println("</body></html>");
+              //client.println("</body></html>");
               client.println();
+
               delay(10);
               client.flush();
               //client.stop();
@@ -203,8 +217,7 @@ void loop(){
             }
             
             client.println("</body></html>");
-
-            
+           
             // The HTTP response ends with another blank line
             client.println();
             // Break out of the while loop
@@ -220,7 +233,9 @@ void loop(){
     // Clear the header variable
     header = "";
     // Close the connection
+    //delay(1);
     client.stop();
+
     if(DEBUG){
       Serial.println("Client disconnected.");
       Serial.println("");
