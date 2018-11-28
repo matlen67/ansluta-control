@@ -23,4 +23,46 @@ I used folloing components:
 - edit ansluta.ino -> set your AddressByteA and AddressByteB at row 54, 55
 - write project to nodeMCU
 
+
+## Control the lights via webbrowser
+connect to the nodeMCU IP
+press button: off, 50% or 100% to toggle the lights
+
+<img src="https://github.com/matlen67/ansluta-control/blob/master/webcontrol.jpg" width="128">
+
+## Control the lights via FHEM
+create dummy switch and notify to call the url
+
+```
+define AnslutaButton0 dummy
+attr AnslutaButton0 alias Ansluta lights off
+attr AnslutaButton0 devStateIcon .*:FS20.on@grey
+attr AnslutaButton0 room Ansluta
+attr AnslutaButton0 webCmd off
+
+define anslutaButton0_notify notify AnslutaButton0:off  { system("curl 192.168.178.130/ansluta/0") }
+
+define AnslutaButton50 dummy
+attr AnslutaButton50 alias Ansluta lights 50%
+attr AnslutaButton50 devStateIcon .*:FS20.on@orange
+attr AnslutaButton50 room Ansluta
+attr AnslutaButton50 webCmd on
+
+define ansluta50_notify notify AnslutaButton50:on { system("curl 192.168.178.130/ansluta/50") }
+
+define AnslutaButton100 dummy
+attr AnslutaButton100 alias Ansluta light 100%
+attr AnslutaButton100 devStateIcon .*:FS20.on@yellow
+attr AnslutaButton100 room Ansluta
+attr AnslutaButton100 webCmd on
+
+define ansluta100_notify notify AnslutaButton100:on { system("curl 192.168.178.130/ansluta/100") }
+```
+
+<img src="https://github.com/matlen67/ansluta-control/blob/master/fhem_dummy.png" width="128">
+
+
+
+
+
   
