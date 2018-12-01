@@ -28,7 +28,7 @@ I used folloing components:
 connect to the nodeMCU IP
 press button: off, 50% or 100% to toggle the lights
 
-<img src="https://github.com/matlen67/ansluta-control/blob/master/webcontrol.jpg" width="128">
+<img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/webcontrol.jpg" width="128">
 
 ## Control the lights via FHEM
 create dummy switch and notify to call the url
@@ -59,7 +59,7 @@ attr AnslutaButton100 webCmd on
 define ansluta100_notify notify AnslutaButton100:on { system("curl 192.168.178.130/ansluta/100") }
 ```
 
-<img src="https://github.com/matlen67/ansluta-control/blob/master/fhem_dummy.png" width="128">  <img src="https://github.com/matlen67/ansluta-control/blob/master/fhem-tablet-ui.png" width="128">
+<img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/fhem_dummy.png" width="128">  <img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/fhem-tablet-ui.png" width="128">
 
 
 
