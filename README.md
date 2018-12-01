@@ -1,5 +1,5 @@
 # ansluta-control
-remote control Ikea Ansluta 2,4Ghz 
+web-based Ikea Ansluta 2,4Ghz remote controller
 
 This project was created to control Ikea Omlopp/Utrusta lights by webbrowser or add it to a home automation system (FHEM)
 
