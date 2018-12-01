@@ -9,7 +9,7 @@ I used folloing components:
   - Lolin NodeMCU V3 [az-delivery](https://www.az-delivery.de/collections/wifi-module/products/copy-of-nodemcu-lua-amica-v2-modul-mit-esp8266-12e?ls=de)
   - CC2500 Transiver module (WLC24D) [ebay](https://www.ebay.com/itm/2PCS-1-8-3-6V-CC2500-IC-Wireless-RF-2400MHZ-Transceiver-Module-SPI-ISM-Demo-Code/401239287968)
 
-<img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/NodeMCU_V3.jpg" width="64">  <img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/WLC-24D.png" width="64">
+<img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/NodeMCU_V3.jpg" width="128">       <img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/WLC-24D.png" width="128">
 
 ## Software:
   - Arduino IDE [www.arduino.cc](https://www.arduino.cc/en/Main/Software)
