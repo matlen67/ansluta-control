@@ -1,5 +1,5 @@
 # ansluta-control
-control Ikea Ansluta 2,4Ghz 
+remote control Ikea Ansluta 2,4Ghz 
 
 This project was created to control the Ikea Omlopp/Utrusta lights by webbrowser or add it to a home automation system (FHEM)
 
@@ -14,6 +14,22 @@ This project was created to control the Ikea Omlopp/Utrusta lights by webbrowser
 ## Software:
   - Arduino IDE [www.arduino.cc](https://www.arduino.cc/en/Main/Software)
 
+
+#### Setup Arduino IDE
+
+- Go to Tools -> Boards Manager and seach 'nodemcu' 
+- install -> 'esp8266 by ESP8266 Community' support
+<img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/arduino_boardmanager.png" width="64">
+
+- Select Board:  NodeMCU 1.0 (ESP.12E Module)
+- Set CPU Frequency to 160 Mhz
+- Select com port
+<img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/arduino_esp8266_config.png" width="64">
+
+
+  
+  
+  
   
 ## Get your Ansluta address bytes
 - start Arduion ide, load project files
