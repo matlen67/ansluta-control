@@ -20,7 +20,7 @@ This project was created to control Ikea Omlopp/Utrusta lights by webbrowser or 
 #### Setup Arduino IDE
 
 - Go to Tools -> Boards Manager and seach 'nodemcu' 
-- install -> 'esp8266 by ESP8266 Community' support
+- install -> 'esp8266 by ESP8266 Community'
 <img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/arduino_boardmanager.png" width="64">
 
 - Select Board:  NodeMCU 1.0 (ESP.12E Module)
