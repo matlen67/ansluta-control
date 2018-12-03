@@ -1,5 +1,5 @@
 # ansluta-control
-Ikea Ansluta remote control by nodeMCU and CC2500 2.4Ghz transceiver via arduino
+#### Ikea Ansluta remote control by nodeMCU and CC2500 2.4Ghz transceiver via arduino
 
 This project was created to control Ikea Omlopp/Utrusta lights by webbrowser or add it to a home automation system (FHEM)
 The original remote has one Button. With every push the lights cycle -> 50% -> 100% -> 50% -> off
