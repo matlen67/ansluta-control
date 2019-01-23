@@ -4,20 +4,25 @@
 	created 24.11.2018
 	by matlen67
 	
-	
+	modified 23.01.2019
+  by flokycool
+  
 	Hardware:
-		* NodeMCU Lolin V3 (az-delivery)
+	  * NodeMCU Lolin V3 (az-delivery)
 		* CC2500 (WLC240)  (ebay)
 		
 	Wired:
-           NodeMCU                   CC2500
+           NodeMCU                 CC2500        Push-Button
 		
 		SPI     GPIO   Board
-		----------------------         --------
+		----------------------         --------      ------
+           3.3V   (3V3)             VCC
 		SLC    GPIO14  (D5)             SCLK
 		MISO   GPIO12  (D6)             MISO
 		MOSI   GPIO13  (D7)             MOSI
-		CSx    GPIO15  (D8)             CSN				
+		CSx    GPIO15  (D8)             CSN
+           Ground   (G)             G				     Button Pin1
+                   (D3)                          Button Pin2
 */
 
 
@@ -26,6 +31,25 @@
 #include "cc2500_CMD.h"
 #include <SPI.h>
 #include <ESP8266WiFi.h>
+#define USE_MQTT 0  //To use MQTT, install Library "PubSubClient" and switch line to 1
+#define USE_BUTTON 0  //To use a local Push-Button for on/off toggle, set this to 1
+
+#if USE_BUTTON == 1
+  const int buttonPin = D3;  // If you wish to use a different pinout, change it here
+  int buttonState = HIGH;   // This worked for my Buttone depending on your Button you might try LOW here
+  int thisButtonState = HIGH;  // This worked for my Buttone depending on your Button you might try LOW here
+  int lastButtonState = HIGH;  // This worked for my Buttone depending on your Button you might try LOW here
+  unsigned long lastDebounceTime = 0;  // the time the button state last switched
+  unsigned long debounceDelay = 50;    // the state must remain the same for this many millis to register the button press
+#endif
+
+#if USE_MQTT == 1
+  #include <PubSubClient.h>
+  //Your MQTT Broker
+  const char* mqtt_server = "192.168.0.2";  //enter your mqtt server jere
+  const char* mqtt_in_topic = "ansluta/light/set";  //modifiy your mqtt topic to your needs
+  const char* mqtt_out_topic = "ansluta/light/status";  //modifiy your mqtt topic to your needs
+#endif
 
 #define CS 15                     // ChipSelect NodeMCU Pin15
 
@@ -34,15 +58,21 @@
 #define Light_ON_100    0x03      // Command to turn the light on 100%
 #define Light_PAIR      0xFF      // Command to pair a remote to the light
 
+bool relais = 0;  //dummy relais just to remember last light state 
+const boolean DEBUG = true;       // debug mode print same infos by RS232
 
-const boolean DEBUG = false;       // debug mode print same infos by RS232
+const char* ssid     = "yourssid";
+const char* password = "yourwifipassword";
 
-const char* ssid     = "here your SSID";
-const char* password = "here your Wlankey";
+
+#if USE_MQTT == 1
+  WiFiClient espClient;
+  PubSubClient client(espClient);
+  bool status_mqtt = 1;
+#endif
 
 WiFiServer server(80);
 String header;
-
 
 /* get your ansluta address!
    -------------------------
@@ -53,11 +83,16 @@ String header;
 */ 
 
 // pute here your AddressBytes
-byte AddressByteA = 0xD0;
-byte AddressByteB = 0x9A;
+byte AddressByteA = 0x1A;
+byte AddressByteB = 0x0B;
 
  
 void setup(){
+
+  #if USE_BUTTON == 1
+    //pushbutton
+    pinMode(buttonPin, INPUT);
+  #endif
 
   // config ChipSelect
   pinMode(CS,OUTPUT);
@@ -87,6 +122,12 @@ void setup(){
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
   }
+
+  #if USE_MQTT == 1  
+    client.setServer(mqtt_server, 1883);
+    client.setCallback(MqttCallback);
+  #endif
+
   server.begin();
 
   // SPI config 
@@ -110,7 +151,39 @@ void setup(){
 }
 
 void loop(){
+  #if USE_MQTT == 1
+  //MQTT
+   if (!client.connected()) {
+    MqttReconnect();
+   }
+   if (client.connected()) {
+    MqttStatePublish();
+   }
+  client.loop();
+  #endif 
 
+  #if USE_BUTTON == 1
+  //Button Press Handle
+    thisButtonState = digitalRead(buttonPin);
+    if (thisButtonState != lastButtonState) {
+      lastDebounceTime = millis();
+    }
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+      if (thisButtonState != buttonState) {
+        buttonState = thisButtonState;
+        if (buttonState != HIGH) {  // This worked for my Buttone depending on your Button you might try LOW here
+          if (relais == 1 ) {
+            Switch_Off();
+          } else {
+            Switch_On();
+          }        
+        }
+      }
+    }
+    lastButtonState = thisButtonState;
+  #endif
+  
+  //Web Server
   WiFiClient client = server.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
@@ -166,18 +239,22 @@ void loop(){
               if(DEBUG){
                 Serial.println("Ansluta 50% ");
               }
-              
               SendCommand(AddressByteA,AddressByteB, Light_ON_50);
             } else if (header.indexOf("GET /ansluta/100") >= 0) {
               if(DEBUG){
                 Serial.println("Ansluta 100%");
               }
-              SendCommand(AddressByteA,AddressByteB, Light_ON_100);
+              Switch_On();
             } else if (header.indexOf("GET /ansluta/0") >= 0) {
               if(DEBUG){
                 Serial.println("Ansluta 0%");
               }
-              SendCommand(AddressByteA,AddressByteB, Light_OFF);
+              Switch_Off();
+            } else if (header.indexOf("GET /ansluta/Pair") >= 0) {
+              if(DEBUG){
+                Serial.println("Ansluta Pair");
+              }
+              SendCommand(AddressByteA,AddressByteB, Light_PAIR);
             } else if (header.indexOf("GET /ansluta/getAddress") >= 0) {
               if(DEBUG){
                 Serial.println("Ansluta getAddress");
@@ -196,7 +273,12 @@ void loop(){
             
             }
             
-            
+            if(relais == 0){
+              client.println("<p>Status <b>off</b></p>");
+            }else{
+              client.println("<p>Status <b>on</b></p>");
+            }
+                        
             if(adrState == false){
               client.println("<br>");
               client.println("<p></p>");
@@ -243,6 +325,83 @@ void loop(){
   }
 }
 
+#if USE_MQTT == 1
+void MqttCallback(char* topic, byte* payload, unsigned int length) {
+  // Ausgabe payload
+  if(DEBUG){
+    Serial.print("MQTT Payload: ");
+    for (int i=0; i<length; i++){
+      Serial.print(char(payload[i]));
+    }
+    Serial.println("");
+  }
+  // Switch on
+  if ((char)payload[0] == 'o' && (char)payload[1] == 'n' ) {
+    Switch_On();
+  //Switch off
+  } else {
+    Switch_Off();
+  }
+}
+
+void MqttReconnect() {
+  String clientID = "Ansluta_"; // 13 chars
+  clientID += WiFi.macAddress();//17 chars
+
+  while (!client.connected()) {
+    if(DEBUG){
+      Serial.println("Connect to MQTT-Broker");
+    }
+    if (client.connect(clientID.c_str())) {
+      if(DEBUG){
+        Serial.print("connected as clientID:");
+        Serial.println(clientID);
+      }
+      //publish ready
+      client.publish(mqtt_out_topic, "mqtt client ready");
+      //subscribe in topic
+      client.subscribe(mqtt_in_topic);
+    } else {
+      if(DEBUG){
+        Serial.print("failed: ");
+        Serial.print(client.state());
+        Serial.println(" try again...");
+      }
+      delay(5000);
+    }
+  }
+}
+
+void MqttStatePublish() {
+  if (relais == 1 and not status_mqtt)
+     {
+      status_mqtt = relais;
+      client.publish(mqtt_out_topic, "on");
+      if(DEBUG){
+        Serial.println("MQTT publish: on");
+      }
+     }
+  if (relais == 0 and status_mqtt)
+     {
+      status_mqtt = relais;
+      client.publish(mqtt_out_topic, "off");
+      if(DEBUG){
+        Serial.println("MQTT publish: off");
+      }
+     }
+}
+#endif
+
+void Switch_On(void) {
+  relais = 1;
+  SendCommand(AddressByteA,AddressByteB, Light_ON_100);
+//  startAt = 0;
+}
+void Switch_Off(void) {
+  relais = 0;
+  SendCommand(AddressByteA,AddressByteB, Light_OFF);
+//  stopAt = 0;
+}
  
 String ReadAddressBytes(){     //Read Address Bytes From a remote by sniffing its packets wireless
    byte tries=0;
