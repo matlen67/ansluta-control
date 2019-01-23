@@ -40,10 +40,10 @@ The remote send a series of data icluded two own address bytes.
 - determine your nodeMCU IP and connect browser. example: **192.168.178.130/ansluta/getAddress**
 - press button on original remote
 - note your AddressBytes
-- edit ansluta.ino -> 
-  -set your AddressByteA and AddressByteB at row 86, 86
-  -turn on mqtt (if required) and configure it at row  34, 49, 50, 51
-  -turn on push-button support (if required) at row 35, 38
+- edit ansluta.ino 
+  - set your AddressByteA and AddressByteB at row 86, 86
+  - turn on mqtt (if required) and configure it at row  34, 49, 50, 51
+  - turn on push-button support (if required) at row 35, 38
 - write project to nodeMCU
 
 
