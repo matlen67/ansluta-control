@@ -5,24 +5,24 @@
 	by matlen67
 	
 	modified 23.01.2019
-  by flokycool
+        by flokycool
   
 	Hardware:
 	  * NodeMCU Lolin V3 (az-delivery)
 		* CC2500 (WLC240)  (ebay)
 		
 	Wired:
-           NodeMCU                 CC2500        Push-Button
+                       NodeMCU                 CC2500        Push-Button
 		
 		SPI     GPIO   Board
 		----------------------         --------      ------
-           3.3V   (3V3)             VCC
+                3.3V   (3V3)                    VCC
 		SLC    GPIO14  (D5)             SCLK
 		MISO   GPIO12  (D6)             MISO
 		MOSI   GPIO13  (D7)             MOSI
 		CSx    GPIO15  (D8)             CSN
-           Ground   (G)             G				     Button Pin1
-                   (D3)                          Button Pin2
+                       Ground   (G)             G	      Button Pin1
+                   		(D3)                          Button Pin2
 */
 
 
