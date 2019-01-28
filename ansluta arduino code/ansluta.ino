@@ -4,25 +4,20 @@
 	created 24.11.2018
 	by matlen67
 	
-	modified 23.01.2019
-        by flokycool
-  
+	
 	Hardware:
-	  * NodeMCU Lolin V3 (az-delivery)
+		* NodeMCU Lolin V3 (az-delivery)
 		* CC2500 (WLC240)  (ebay)
 		
 	Wired:
-                       NodeMCU                 CC2500        Push-Button
+           NodeMCU                   CC2500
 		
 		SPI     GPIO   Board
-		----------------------         --------      ------
-                3.3V   (3V3)                    VCC
+		----------------------         --------
 		SLC    GPIO14  (D5)             SCLK
 		MISO   GPIO12  (D6)             MISO
 		MOSI   GPIO13  (D7)             MOSI
-		CSx    GPIO15  (D8)             CSN
-                       Ground   (G)             G	      Button Pin1
-                   		(D3)                          Button Pin2
+		CSx    GPIO15  (D8)             CSN				
 */
 
 
@@ -50,7 +45,6 @@
   const char* mqtt_in_topic = "ansluta/light/set";  //modifiy your mqtt topic to your needs
   const char* mqtt_out_topic = "ansluta/light/status";  //modifiy your mqtt topic to your needs
 #endif
-
 #define CS 15                     // ChipSelect NodeMCU Pin15
 
 #define Light_OFF       0x01      // Command to turn the light off
@@ -59,11 +53,10 @@
 #define Light_PAIR      0xFF      // Command to pair a remote to the light
 
 bool relais = 0;  //dummy relais just to remember last light state 
-const boolean DEBUG = true;       // debug mode print same infos by RS232
+const boolean DEBUG = false;       // debug mode print same infos by RS232
 
-const char* ssid     = "yourssid";
-const char* password = "yourwifipassword";
-
+const char* ssid     = "here your SSID";
+const char* password = "here your Wlankey";
 
 #if USE_MQTT == 1
   WiFiClient espClient;
@@ -74,6 +67,7 @@ const char* password = "yourwifipassword";
 WiFiServer server(80);
 String header;
 
+
 /* get your ansluta address!
    -------------------------
    connect browser to webcontrol
@@ -83,8 +77,8 @@ String header;
 */ 
 
 // pute here your AddressBytes
-byte AddressByteA = 0x1A;
-byte AddressByteB = 0x0B;
+byte AddressByteA = 0xD0;
+byte AddressByteB = 0x9A;
 
  
 void setup(){
@@ -122,12 +116,11 @@ void setup(){
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
   }
-
   #if USE_MQTT == 1  
     client.setServer(mqtt_server, 1883);
     client.setCallback(MqttCallback);
   #endif
-
+  
   server.begin();
 
   // SPI config 
@@ -183,7 +176,6 @@ void loop(){
     lastButtonState = thisButtonState;
   #endif
   
-  //Web Server
   WiFiClient client = server.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
@@ -239,6 +231,7 @@ void loop(){
               if(DEBUG){
                 Serial.println("Ansluta 50% ");
               }
+              
               SendCommand(AddressByteA,AddressByteB, Light_ON_50);
             } else if (header.indexOf("GET /ansluta/100") >= 0) {
               if(DEBUG){
@@ -278,7 +271,7 @@ void loop(){
             }else{
               client.println("<p>Status <b>on</b></p>");
             }
-                        
+            
             if(adrState == false){
               client.println("<br>");
               client.println("<p></p>");
