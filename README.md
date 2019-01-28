@@ -41,9 +41,9 @@ The remote send a series of data icluded two own address bytes.
 - press button on original remote
 - note your AddressBytes
 - edit ansluta.ino 
-  - set your AddressByteA and AddressByteB at row 86, 86
-  - turn on mqtt (if required) and configure it at row  34, 49, 50, 51
-  - turn on push-button support (if required) at row 35, 38
+  - set your AddressByteA and AddressByteB at row 80, 81
+  - turn on mqtt (if required) and configure it at row  29 and modify 44, 45, 46 to your needs
+  - turn on push-button support (if required) at row 30 and modify 33-36 to your needs
 - write project to nodeMCU
 
 
