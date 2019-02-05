@@ -35,12 +35,15 @@ The remote send a series of data icluded two own address bytes.
 
 ## Get the Ansluta address bytes from your remote
 - start Arduion ide, load project files
-- edit ansluta.ino -> set your SSID and Wlankey at row 40, 41
+- edit ansluta.ino -> set your SSID and Wlankey at row 64, 65
 - write project to nodeMCU
 - determine your nodeMCU IP and connect browser. example: **192.168.178.130/ansluta/getAddress**
 - press button on original remote
 - note your AddressBytes
-- edit ansluta.ino -> set your AddressByteA and AddressByteB at row 54, 55
+- edit ansluta.ino 
+  - set your AddressByteA and AddressByteB at row 80, 81
+  - turn on mqtt (if required) and configure it at row  29 and modify 44, 45, 46 to your needs
+  - turn on push-button support (if required) at row 30 and modify 33-36 to your needs
 - write project to nodeMCU
 
 
