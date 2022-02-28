@@ -84,6 +84,16 @@ example pictures FHEM and Tablet-UI:
 <img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/fhem_dummy.png" width="128">  <img src="https://github.com/matlen67/ansluta-control/blob/master/pictures/fhem-tablet-ui.png" width="128">
 
 
+# ESPHome - Home Assistant - Ikea Ansluta Control
+This hardware can be used with ESPHome to manage in Home Assistant as a dimmable light component.
+[<img src="https://esphome.io/_static/logo-text.svg" width="200"/>](https://esphome.io)
+</br>
+[<img src="https://www.home-assistant.io/images/home-assistant-logo.svg" width="200"/>](https://www.home-assistant.io/)
+
+Check this 3th party project:</br>
+### ESPHome Ikea Ansluta Control light
+[https://github.com/adrianByv/ESPHome-Ikea-Ansluta-Control-light](https://github.com/adrianByv/ESPHome-Ikea-Ansluta-Control-light)
+
 
 
 
